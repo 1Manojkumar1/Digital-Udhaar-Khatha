@@ -1,3 +1,14 @@
+/**
+ * TransactionSummary — Three-Card Financial Overview
+ *
+ * Displays three summary cards showing the merchant's overall financial standing:
+ *   1. Total Outstanding (money to receive / credit given) — red
+ *   2. Total Advances (money received / payments settled) — green
+ *   3. Net Standing (difference between the two) — color-coded
+ *
+ * Used on the Dashboard page to give an at-a-glance business health view.
+ */
+
 import React from 'react';
 import { ArrowUpRight, ArrowDownLeft, Scale, CheckCircle2 } from 'lucide-react';
 import formatCurrency from '../../utils/formatCurrency';

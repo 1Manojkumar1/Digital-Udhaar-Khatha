@@ -1,3 +1,19 @@
+/**
+ * AuthContext — Authentication State Provider
+ *
+ * Provides global authentication state and methods to the entire app:
+ *   - user: current logged-in user object (name, email, shopName, currency, etc.)
+ *   - token: JWT token string
+ *   - loading: true during initial session check and login/register calls
+ *   - error: last authentication error message
+ *   - login(email, password): authenticates and stores session
+ *   - register(name, email, password, phone, shopName, currency): creates account
+ *   - logout(): clears session from localStorage and resets state
+ *
+ * On initial load, checks localStorage for cached credentials and validates
+ * them against the backend profile endpoint. Invalid sessions are auto-cleared.
+ */
+
 import React, { createContext, useState, useEffect } from 'react';
 import authService from './authService';
 

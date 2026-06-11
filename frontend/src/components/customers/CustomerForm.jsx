@@ -1,3 +1,17 @@
+/**
+ * CustomerForm — Create/Edit Customer Profile
+ *
+ * Form used for both adding new customers and editing existing ones.
+ * When initialData is provided, the form is pre-populated (edit mode).
+ *
+ * Fields:
+ *   - Name (required), Phone (required), Email, Address
+ *   - Reminder settings: Start after (interval + unit), Repeat every (interval + unit)
+ *
+ * Reminder settings control when automatic email reminders begin after
+ * a credit transaction and how often they repeat until the balance is cleared.
+ */
+
 import React, { useState, useEffect } from 'react';
 import { User, Phone, Mail, MapPin, Loader2, Bell } from 'lucide-react';
 

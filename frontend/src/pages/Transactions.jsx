@@ -1,3 +1,20 @@
+/**
+ * Transactions — Global Transaction Viewer
+ *
+ * A page for viewing and editing transactions across all customers.
+ * Requires selecting a customer from a dropdown before displaying
+ * their transaction history in a TransactionTable.
+ *
+ * Features:
+ *   - Customer selector dropdown
+ *   - Transaction list with edit/delete (opens TransactionForm in modal)
+ *   - Auto-loads transactions when customer is selected
+ *   - Empty state when no customer is selected
+ *
+ * Note: New transactions can only be created from the CustomerDetails page.
+ * This page is for viewing and editing existing entries only.
+ */
+
 import React, { useEffect, useState } from 'react';
 import { CreditCard, User, ArrowRight, AlertCircle, RefreshCw } from 'lucide-react';
 import useAuth from '../auth/useAuth';

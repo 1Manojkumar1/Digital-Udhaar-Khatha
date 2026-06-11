@@ -1,3 +1,11 @@
+/**
+ * CustomerProfile — Customer Detail Header Card
+ *
+ * Displays the full customer profile at the top of the CustomerDetails page.
+ * Shows: avatar, name, phone, email, address, reminder configuration details,
+ * and a large balance summary card (due/advance/settled) with color coding.
+ */
+
 import React from 'react';
 import { Phone, Mail, MapPin, Calendar, Bell, CheckCircle2 } from 'lucide-react';
 import { getBalanceStanding } from '../../customers/customerUtils';

@@ -1,3 +1,12 @@
+/**
+ * ErrorBoundary — React Class Error Catcher
+ *
+ * Catches JavaScript errors during rendering of child components and
+ * displays a user-friendly error card instead of a white screen.
+ * Logs the error to console for debugging and provides a "Reload page"
+ * button to attempt recovery. Accepts an optional custom fallback UI.
+ */
+
 import React from 'react';
 import { AlertTriangle, RefreshCw } from 'lucide-react';
 

@@ -1,3 +1,11 @@
+/**
+ * Login Page
+ *
+ * Renders the login form inside the AuthLayout (two-column split).
+ * On successful login, navigates to the dashboard (/).
+ * Includes a link to the registration page for new merchants.
+ */
+
 import React from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import AuthLayout from '../layouts/AuthLayout';

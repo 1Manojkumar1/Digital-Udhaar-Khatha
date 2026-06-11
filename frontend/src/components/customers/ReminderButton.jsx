@@ -1,3 +1,18 @@
+/**
+ * ReminderButton — Schedule Reminder Trigger & Modal
+ *
+ * Opens a scheduling modal for setting up automatic payment reminders
+ * for a specific customer. The modal includes:
+ *   - Scheduled date picker
+ *   - Recurrence pattern selector (none, daily, weekly, biweekly, monthly, custom)
+ *   - Repeat interval and max repeat count
+ *   - Weekly: day-of-week selector; Monthly: day-of-month picker
+ *   - Custom message textarea (pre-filled with balance + shop name)
+ *
+ * Disabled when customer balance is settled or in advance (no dues to remind).
+ * Sends POST /api/reminders with the full recurrence configuration.
+ */
+
 import React, { useState, useEffect } from 'react';
 import { Calendar, Clock, Loader2, CheckCircle2 } from 'lucide-react';
 import { getBalanceStanding } from '../../customers/customerUtils';

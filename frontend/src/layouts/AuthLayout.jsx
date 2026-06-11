@@ -1,3 +1,15 @@
+/**
+ * AuthLayout — Login/Register Page Shell
+ *
+ * Two-column layout for authentication screens:
+ *   Left panel (desktop only): teal branded hero with app name, slogan,
+ *     and feature highlights (Secure Cloud Backup, Frictionless Tracking)
+ *   Right panel: centered card containing the form (children)
+ *
+ * On mobile, the left panel is hidden and a compact brand header
+ * appears above the form card instead.
+ */
+
 import React from 'react';
 import { Store, ShieldCheck, TrendingUp } from 'lucide-react';
 

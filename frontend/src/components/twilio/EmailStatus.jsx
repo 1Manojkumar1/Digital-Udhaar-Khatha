@@ -1,3 +1,13 @@
+/**
+ * EmailStatus — Email Usage Counter Widget
+ *
+ * Displays the shopkeeper's email sending statistics in the top navbar.
+ * Shows today's message count and monthly total, auto-refreshing every
+ * 60 seconds. Fetches data from GET /api/reminders/stats.
+ *
+ * Hidden if the stats endpoint returns no data (e.g. first load).
+ */
+
 import React, { useEffect, useState, useRef } from 'react';
 import { Mail, RefreshCw } from 'lucide-react';
 import axiosInstance from '../../utils/axiosInstance';

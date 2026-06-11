@@ -1,3 +1,11 @@
+/**
+ * RegisterForm — New Shopkeeper Registration Form
+ *
+ * Multi-field form for creating a new shopkeeper account.
+ * Fields: Full Name, Phone, Email, Password, Shop Name, Preferred Currency.
+ * Calls AuthContext.register() on submit and navigates to dashboard on success.
+ */
+
 import React, { useState } from 'react';
 import { User, Mail, Lock, Phone, Store, DollarSign, Eye, EyeOff, Loader2 } from 'lucide-react';
 import useAuth from '../../auth/useAuth';

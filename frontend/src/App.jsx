@@ -1,3 +1,23 @@
+/**
+ * App — Root Component & Route Definitions
+ *
+ * Defines all client-side routes and wraps the entire app in AuthContext
+ * so authentication state is accessible everywhere.
+ *
+ * Route structure:
+ *   /login, /register  — Public (redirect to / if already logged in)
+ *   /                  — Dashboard home with summary stats
+ *   /customers         — Customer directory list
+ *   /customers/:id     — Individual customer ledger (transactions, reminders)
+ *   /transactions      — Global transaction viewer (select customer first)
+ *   /statements        — PDF statement generator
+ *   /reminders         — Reminder management and batch scheduling
+ *   *                  — Catch-all redirect to /
+ *
+ * PrivateRoute ensures unauthenticated users are sent to /login.
+ * PublicRoute ensures logged-in users can't revisit auth pages.
+ */
+
 import React from 'react';
 import { Routes, Route, Navigate } from 'react-router-dom';
 import { AuthProvider } from './auth/AuthContext';

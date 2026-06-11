@@ -1,3 +1,17 @@
+/**
+ * Customer Routes
+ *
+ * CRUD operations for the shopkeeper's customer directory.
+ * All routes require authentication via JWT.
+ *
+ * Endpoints:
+ *   GET    /               - List customers with search & pagination
+ *   GET    /:id            - Get a single customer by ID
+ *   POST   /               - Create a new customer
+ *   PUT    /:id            - Update customer details
+ *   DELETE /:id            - Delete customer and all related data
+ */
+
 import express from 'express';
 import Customer from '../models/Customer.js';
 import Transaction from '../models/Transaction.js';
@@ -6,7 +20,9 @@ import authMiddleware from '../middlewares/authMiddleware.js';
 
 const router = express.Router();
 
-// Get all customers (with search and pagination)
+// ─── GET / ─────────────────────────────────────────────────────────────
+// Returns a paginated list of customers belonging to the authenticated user.
+// Supports optional search by name or phone (case-insensitive regex).
 router.get('/', authMiddleware, async (req, res, next) => {
   try {
     const { search, page = 1, limit = 20 } = req.query;
@@ -41,7 +57,9 @@ router.get('/', authMiddleware, async (req, res, next) => {
   }
 });
 
-// Get customer by ID
+// ─── GET /:id ──────────────────────────────────────────────────────────
+// Returns a single customer record. Ensures the customer belongs to the
+// authenticated user (prevents unauthorized access to other shopkeepers' data).
 router.get('/:id', authMiddleware, async (req, res, next) => {
   try {
     const customer = await Customer.findOne({ _id: req.params.id, user: req.user._id });
@@ -54,7 +72,9 @@ router.get('/:id', authMiddleware, async (req, res, next) => {
   }
 });
 
-// Create new customer
+// ─── POST / ────────────────────────────────────────────────────────────
+// Creates a new customer with optional reminder configuration.
+// Checks for duplicate phone numbers within the same shopkeeper's account.
 router.post('/', authMiddleware, async (req, res, next) => {
   try {
     const { name, phone, email, address, reminderIntervalValue, reminderIntervalUnit, reminderIntervalDays, reminderPattern, reminderMaxCount, reminderMinBalance, reminderMinDaysSinceTransaction, reminderMinDaysSinceLastReminder, repeatIntervalValue, repeatIntervalUnit } = req.body;
@@ -99,7 +119,9 @@ router.post('/', authMiddleware, async (req, res, next) => {
   }
 });
 
-// Update customer details
+// ─── PUT /:id ──────────────────────────────────────────────────────────
+// Updates customer profile and reminder settings. Only provided fields
+// are modified (partial update pattern). Phone uniqueness is re-checked.
 router.put('/:id', authMiddleware, async (req, res, next) => {
   try {
     const { name, phone, email, address, reminderIntervalDays, reminderIntervalValue, reminderIntervalUnit, reminderPattern, reminderMaxCount, reminderMinBalance, reminderMinDaysSinceTransaction, reminderMinDaysSinceLastReminder, repeatIntervalValue, repeatIntervalUnit } = req.body;
@@ -147,7 +169,9 @@ router.put('/:id', authMiddleware, async (req, res, next) => {
   }
 });
 
-// Delete customer and their transactions
+// ─── DELETE /:id ───────────────────────────────────────────────────────
+// Removes a customer and cascades the deletion to their transactions and
+// reminders. This is a hard delete — data cannot be recovered.
 router.delete('/:id', authMiddleware, async (req, res, next) => {
   try {
     const customer = await Customer.findOne({ _id: req.params.id, user: req.user._id });

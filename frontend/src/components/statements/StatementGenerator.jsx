@@ -1,3 +1,19 @@
+/**
+ * StatementGenerator — PDF Statement Download Widget
+ *
+ * Form that allows the shopkeeper to generate and download a PDF
+ * account statement for a specific customer.
+ *
+ * Fields:
+ *   - Customer selector (dropdown from directory)
+ *   - Start date (optional — defaults to full history)
+ *   - End date (optional — defaults to today)
+ *
+ * On submit, calls statementService.downloadPDF() which hits the backend
+ * PDF generation endpoint, then triggers a browser download via pdfDownload().
+ * The filename includes the customer's sanitized name.
+ */
+
 import React, { useState } from 'react';
 import { FileText, Download, Calendar, User, Loader2, CheckCircle2, AlertCircle } from 'lucide-react';
 import statementService from '../../statements/statementService';

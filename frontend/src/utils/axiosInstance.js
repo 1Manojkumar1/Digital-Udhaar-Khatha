@@ -1,3 +1,15 @@
+/**
+ * Axios Instance — Configured HTTP Client
+ *
+ * Pre-configured Axios instance with:
+ *   - Base URL from API_BASE_URL constant
+ *   - JSON content type header
+ *   - Request interceptor: attaches JWT token from localStorage as Bearer auth
+ *   - Response interceptor: auto-logs out on 401 (token expired/invalid),
+ *     redirects to /login?expired=true, and normalizes error messages
+ *     from API responses into readable Error objects
+ */
+
 import axios from 'axios';
 import { API_BASE_URL } from './constants';
 

@@ -1,3 +1,18 @@
+/**
+ * Dashboard — Home Page & Business Overview
+ *
+ * The main landing page after login, showing:
+ *   1. Welcome banner with shop name
+ *   2. TransactionSummary cards (total to receive, total got, net standing)
+ *   3. Top 5 outstanding dues list (customers with highest netBalance)
+ *   4. Quick action buttons (Add Customer, Generate Statements)
+ *   5. Customer count stat card
+ *   6. Add Customer modal (inline, triggered from quick action)
+ *
+ * Fetches all customers on mount and aggregates stats using
+ * aggregateCustomerStats(). The dues list is sorted descending by balance.
+ */
+
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { UserPlus, ArrowRight, TrendingUp, AlertCircle, Users, CheckCircle2, User, FileText } from 'lucide-react';

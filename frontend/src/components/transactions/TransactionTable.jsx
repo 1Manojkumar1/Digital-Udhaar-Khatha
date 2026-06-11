@@ -1,3 +1,18 @@
+/**
+ * TransactionTable — Tabular Transaction History
+ *
+ * Displays a list of transactions in a table format with columns:
+ *   - Date (short date + time)
+ *   - Type (Give/Take pill with icon)
+ *   - Description (truncated)
+ *   - Receipt (view photo link or "None")
+ *   - Amount (currency formatted, color-coded by type)
+ *   - Actions (edit, delete buttons)
+ *
+ * Receipt photos open in a ReceiptPreviewModal.
+ * Shows empty state when no transactions exist.
+ */
+
 import React, { useState } from 'react';
 import { Edit2, Trash2, Image as ImageIcon, ArrowUpRight, ArrowDownLeft, FileText } from 'lucide-react';
 import { getTransactionStyle } from '../../transactions/transactionUtils';

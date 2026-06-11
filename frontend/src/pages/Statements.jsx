@@ -1,3 +1,14 @@
+/**
+ * Statements — PDF Statement Generator Page
+ *
+ * Provides the StatementGenerator widget (customer selector + date range + download)
+ * alongside an informational guide explaining:
+ *   - Default statement behavior (full history)
+ *   - Custom date range scoping
+ *   - Embedded shop name and merchant details
+ *   - Relationship between statements and reminders
+ */
+
 import React, { useEffect } from 'react';
 import { FileText, AlertCircle } from 'lucide-react';
 import useCustomers from '../customers/useCustomers';

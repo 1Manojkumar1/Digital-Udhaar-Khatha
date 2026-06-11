@@ -1,3 +1,11 @@
+/**
+ * Statement Routes
+ *
+ * Generates downloadable PDF account statements for a customer.
+ * The PDF includes the shop header, customer info, financial summary,
+ * and a full transaction ledger with running balance.
+ */
+
 import express from 'express';
 import Customer from '../models/Customer.js';
 import Transaction from '../models/Transaction.js';
@@ -6,7 +14,9 @@ import authMiddleware from '../middlewares/authMiddleware.js';
 
 const router = express.Router();
 
-// Generate and stream PDF statement for a customer
+// ─── GET /customer/:customerId/pdf ─────────────────────────────────────
+// Streams a PDF statement as a file download. Supports optional date
+// range filtering via query parameters (startDate, endDate).
 router.get('/customer/:customerId/pdf', authMiddleware, async (req, res, next) => {
   try {
     const { startDate, endDate } = req.query;

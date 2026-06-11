@@ -1,3 +1,15 @@
+/**
+ * LoginForm — Shopkeeper Login Form
+ *
+ * Email/password form that calls AuthContext.login() on submit.
+ * Features:
+ *   - Show/hide password toggle
+ *   - Client-side validation (both fields required)
+ *   - Loading spinner during API call
+ *   - Error message display
+ *   - Calls onSuccess callback on successful login (triggers navigation)
+ */
+
 import React, { useState } from 'react';
 import { Mail, Lock, Eye, EyeOff, Loader2 } from 'lucide-react';
 import useAuth from '../../auth/useAuth';

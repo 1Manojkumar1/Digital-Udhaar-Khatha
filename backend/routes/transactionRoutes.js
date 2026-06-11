@@ -1,3 +1,12 @@
+/**
+ * Transaction Routes
+ *
+ * Handles creating, reading, updating, and deleting financial transactions
+ * (give/take entries). Supports optional receipt image uploads via Multer.
+ *
+ * All routes require authentication.
+ */
+
 import express from 'express';
 import multer from 'multer';
 import path from 'path';
@@ -7,7 +16,10 @@ import authMiddleware from '../middlewares/authMiddleware.js';
 
 const router = express.Router();
 
-// Setup Multer Storage
+// ── Multer Configuration ───────────────────────────────────────────────
+// Files are stored in the "uploads/" directory with unique timestamped
+// names to prevent collisions. Only image files (JPEG/PNG/GIF) are allowed,
+// with a 5 MB size limit.
 const storage = multer.diskStorage({
   destination: (req, file, cb) => {
     cb(null, 'uploads/');
@@ -18,7 +30,7 @@ const storage = multer.diskStorage({
   },
 });
 
-// File filter (allow images only)
+// Reject files that aren't images by checking both extension and MIME type
 const fileFilter = (req, file, cb) => {
   const allowedTypes = /jpeg|jpg|png|gif/;
   const ext = allowedTypes.test(path.extname(file.originalname).toLowerCase());
@@ -36,7 +48,9 @@ const upload = multer({
   fileFilter,
 });
 
-// Get transactions for a customer (with pagination)
+// ─── GET /customer/:customerId ─────────────────────────────────────────
+// Returns paginated transactions for a specific customer, sorted by date
+// descending (most recent first).
 router.get('/customer/:customerId', authMiddleware, async (req, res, next) => {
   try {
     const { page = 1, limit = 50 } = req.query;
@@ -67,7 +81,10 @@ router.get('/customer/:customerId', authMiddleware, async (req, res, next) => {
   }
 });
 
-// Create transaction (supports receipt image upload)
+// ─── POST / ────────────────────────────────────────────────────────────
+// Creates a new transaction. Accepts multipart/form-data for receipt
+// image uploads. The service layer handles balance auto-adjustment
+// and auto-reminder scheduling.
 router.post('/', authMiddleware, upload.single('receipt'), async (req, res, next) => {
   try {
     const { customerId, amount, type, description, date } = req.body;
@@ -95,7 +112,9 @@ router.post('/', authMiddleware, upload.single('receipt'), async (req, res, next
   }
 });
 
-// Update transaction details
+// ─── PUT /:id ──────────────────────────────────────────────────────────
+// Updates an existing transaction. Recalculates the customer's net balance
+// based on the delta between old and new values.
 router.put('/:id', authMiddleware, upload.single('receipt'), async (req, res, next) => {
   try {
     const { amount, type, description, date } = req.body;
@@ -120,7 +139,8 @@ router.put('/:id', authMiddleware, upload.single('receipt'), async (req, res, ne
   }
 });
 
-// Delete transaction
+// ─── DELETE /:id ───────────────────────────────────────────────────────
+// Deletes a transaction and reverses its effect on the customer's balance.
 router.delete('/:id', authMiddleware, async (req, res, next) => {
   try {
     const result = await transactionService.deleteTransaction(req.params.id, req.user._id);

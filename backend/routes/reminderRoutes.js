@@ -1,3 +1,13 @@
+/**
+ * Reminder Routes
+ *
+ * Manages payment reminders — both automated (via cron) and manual.
+ * Provides endpoints for scheduling, sending, cancelling, and batch
+ * creating reminders, plus a test email endpoint for verifying setup.
+ *
+ * All routes require authentication.
+ */
+
 import express from 'express';
 import Reminder from '../models/Reminder.js';
 import Customer from '../models/Customer.js';
@@ -8,7 +18,8 @@ import authMiddleware from '../middlewares/authMiddleware.js';
 
 const router = express.Router();
 
-// Get reminder stats (today sent count)
+// ─── GET /stats ────────────────────────────────────────────────────────
+// Returns today's and this month's sent email counts for the dashboard badge.
 router.get('/stats', authMiddleware, async (req, res, next) => {
   try {
     const now = new Date();
@@ -37,7 +48,8 @@ router.get('/stats', authMiddleware, async (req, res, next) => {
   }
 });
 
-// Get reminders for a customer
+// ─── GET /customer/:customerId ─────────────────────────────────────────
+// Returns all reminders for a specific customer, sorted by scheduled date.
 router.get('/customer/:customerId', authMiddleware, async (req, res, next) => {
   try {
     const reminders = await Reminder.find({
@@ -53,7 +65,8 @@ router.get('/customer/:customerId', authMiddleware, async (req, res, next) => {
   }
 });
 
-// Get all reminders for the logged-in user (dashboard)
+// ─── GET / ─────────────────────────────────────────────────────────────
+// Returns paginated reminders for the logged-in user with optional status filter.
 router.get('/', authMiddleware, async (req, res, next) => {
   try {
     const { status, page = 1, limit = 50 } = req.query;
@@ -86,7 +99,8 @@ router.get('/', authMiddleware, async (req, res, next) => {
   }
 });
 
-// Schedule a new reminder (manual)
+// ─── POST / ────────────────────────────────────────────────────────────
+// Manually schedule a new reminder for a specific customer.
 router.post('/', authMiddleware, async (req, res, next) => {
   try {
     const { customerId, scheduledDate, message, recurrencePattern, recurrenceInterval, recurrenceIntervalUnit, recurrenceDaysOfWeek, recurrenceDayOfMonth, recurrenceCron, maxRecurrenceCount, minBalance, minDaysSinceTransaction, minDaysSinceLastReminder } = req.body;
@@ -120,7 +134,9 @@ router.post('/', authMiddleware, async (req, res, next) => {
   }
 });
 
-// Send a reminder immediately
+// ─── POST /:id/send-now ────────────────────────────────────────────────
+// Immediately sends a pending reminder and increments the send count.
+// On failure, marks the reminder as "failed" for debugging.
 router.post('/:id/send-now', authMiddleware, async (req, res, next) => {
   try {
     const reminder = await Reminder.findOne({ _id: req.params.id, user: req.user._id });
@@ -149,7 +165,10 @@ router.post('/:id/send-now', authMiddleware, async (req, res, next) => {
   }
 });
 
-// Batch schedule reminders — uses each customer's individual interval settings
+// ─── POST /batch ───────────────────────────────────────────────────────
+// Batch-schedule reminders for all customers with outstanding balance.
+// Skips customers that already have a pending reminder.
+// Uses each customer's individual reminder interval settings.
 router.post('/batch', authMiddleware, async (req, res, next) => {
   try {
     const { message } = req.body;
@@ -209,7 +228,9 @@ router.post('/batch', authMiddleware, async (req, res, next) => {
   }
 });
 
-// Delete/Cancel a scheduled reminder — recreates automatically if customer still owes
+// ─── DELETE /:id ───────────────────────────────────────────────────────
+// Cancels a scheduled reminder. If the customer still has an outstanding
+// balance, a new reminder is automatically recreated with fresh timing.
 router.delete('/:id', authMiddleware, async (req, res, next) => {
   try {
     const reminder = await Reminder.findOne({ _id: req.params.id, user: req.user._id });
@@ -254,7 +275,9 @@ router.delete('/:id', authMiddleware, async (req, res, next) => {
   }
 });
 
-// Send a test email reminder to a customer
+// ─── POST /send-test ───────────────────────────────────────────────────
+// Sends a preview/test email to a customer so the shopkeeper can verify
+// their email setup before enabling automated reminders.
 router.post('/send-test', authMiddleware, async (req, res, next) => {
   try {
     const { customerId } = req.body;

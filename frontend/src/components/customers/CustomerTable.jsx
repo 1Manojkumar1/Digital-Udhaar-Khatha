@@ -1,3 +1,17 @@
+/**
+ * CustomerTable — Desktop Customer Directory Table
+ *
+ * Responsive HTML table displaying all customers with columns for:
+ *   - Customer (avatar, name, address)
+ *   - Contact (phone, email)
+ *   - Last Activity (relative timestamp)
+ *   - Net Balance (formatted currency + status pill: due/advance/settled)
+ *   - Actions (view, edit, delete buttons)
+ *
+ * Shows an empty state illustration when no customers exist.
+ * Used on the Customers page (desktop view only; mobile uses CustomerCard).
+ */
+
 import React from 'react';
 import { Eye, Edit2, Trash2, ArrowUpRight, ArrowDownLeft, CheckCircle2 } from 'lucide-react';
 import { getBalanceStanding } from '../../customers/customerUtils';

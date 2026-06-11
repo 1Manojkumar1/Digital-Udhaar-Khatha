@@ -1,3 +1,12 @@
+/**
+ * CustomerCard — Mobile Customer Directory Card
+ *
+ * Compact card layout for displaying a single customer on mobile screens.
+ * Shows avatar, name, phone, balance badge with status indicator,
+ * last active time, and action buttons (view, edit, delete).
+ * Used as the mobile alternative to CustomerTable.
+ */
+
 import React from 'react';
 import { Eye, Edit2, Trash2, ArrowUpRight, ArrowDownLeft, CheckCircle2 } from 'lucide-react';
 import { getBalanceStanding } from '../../customers/customerUtils';

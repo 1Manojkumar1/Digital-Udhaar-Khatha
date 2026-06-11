@@ -1,18 +1,41 @@
+/**
+ * PDF Service
+ *
+ * Generates formatted A4 account statements as PDF buffers using PDFKit.
+ * The statement includes:
+ *   - Shop header with name and contact info
+ *   - Customer details section
+ *   - Financial summary box (total given, total received, net balance)
+ *   - Transaction ledger table with running balance
+ *
+ * Used by the statement route to stream PDF downloads.
+ */
+
 import PDFDocument from 'pdfkit';
 
+/**
+ * Generates a complete account statement PDF for a customer.
+ *
+ * @param {Object} customer     - Customer document (name, phone, email, address, netBalance)
+ * @param {Object} user         - Shopkeeper document (shopName, name, phone, currency)
+ * @param {Array}  transactions - Array of transaction documents sorted by date ascending
+ * @returns {Promise<Buffer>}   The PDF file as a Buffer, ready to stream
+ */
 const generateStatementPDF = (customer, user, transactions) => {
   return new Promise((resolve, reject) => {
     try {
+      // Create A4 document with 50pt margins
       const doc = new PDFDocument({ margin: 50, size: 'A4' });
       const buffers = [];
       
+      // Collect PDF data chunks as they're generated
       doc.on('data', buffers.push.bind(buffers));
       doc.on('end', () => {
         const pdfData = Buffer.concat(buffers);
         resolve(pdfData);
       });
 
-      // Write header / metadata
+      // ── Shop Header ──────────────────────────────────────────────────
       doc
         .fillColor('#111827')
         .fontSize(24)
@@ -22,7 +45,7 @@ const generateStatementPDF = (customer, user, transactions) => {
         .text(`Shopkeeper: ${user.name} | Phone: ${user.phone}`, { align: 'left' })
         .moveDown(1.5);
 
-      // Draw horizontal line
+      // Horizontal divider line
       doc
         .strokeColor('#E5E7EB')
         .lineWidth(1)
@@ -31,7 +54,7 @@ const generateStatementPDF = (customer, user, transactions) => {
         .stroke()
         .moveDown(1.5);
 
-      // Customer Info
+      // ── Customer Info Section ────────────────────────────────────────
       doc
         .fontSize(14)
         .fillColor('#111827')
@@ -45,7 +68,8 @@ const generateStatementPDF = (customer, user, transactions) => {
         .text(`Address: ${customer.address || 'N/A'}`)
         .moveDown(1.5);
 
-      // Financial Summary Box
+      // ── Financial Summary Box ────────────────────────────────────────
+      // Calculate totals from all transactions
       let totalGive = 0;
       let totalTake = 0;
       transactions.forEach(tx => {
@@ -54,6 +78,7 @@ const generateStatementPDF = (customer, user, transactions) => {
       });
       const currency = user.currency || 'INR';
 
+      // Draw a gray background box for the summary
       doc
         .rect(50, doc.y, 495, 60)
         .fill('#F3F4F6')
@@ -76,15 +101,19 @@ const generateStatementPDF = (customer, user, transactions) => {
         .font('Helvetica')
         .text('NET DUES BALANCE', 380, summaryY)
         .font('Helvetica-Bold')
-        .fillColor(customer.netBalance >= 0 ? '#DC2626' : '#059669') // red if due, green if advance
+        // Red for amounts owed, green for advance payments
+        .fillColor(customer.netBalance >= 0 ? '#DC2626' : '#059669')
         .text(`${currency} ${customer.netBalance.toFixed(2)}`, 380, summaryY + 15);
 
-      doc.x = 50; // restore x
-      doc.y = summaryY + 45; // restore y
+      // Restore position after the summary box
+      doc.x = 50;
+      doc.y = summaryY + 45;
       doc.moveDown(2);
 
-      // Ledger Table Header
+      // ── Transaction Ledger Table ─────────────────────────────────────
       const tableTop = doc.y;
+
+      // Table header row
       doc
         .fillColor('#374151')
         .font('Helvetica-Bold')
@@ -95,7 +124,7 @@ const generateStatementPDF = (customer, user, transactions) => {
         .text('Amount', 400, tableTop)
         .text('Running Bal', 480, tableTop);
 
-      // Horizontal line
+      // Header underline
       doc
         .strokeColor('#9CA3AF')
         .lineWidth(1)
@@ -108,8 +137,9 @@ const generateStatementPDF = (customer, user, transactions) => {
       let runningBalance = 0;
       doc.font('Helvetica').fillColor('#4B5563');
 
+      // Render each transaction as a table row
       transactions.forEach((tx) => {
-        // Adjust running balance
+        // Update running balance: "give" adds, "take" subtracts
         if (tx.type === 'give') runningBalance += tx.amount;
         else runningBalance -= tx.amount;
 
@@ -119,7 +149,7 @@ const generateStatementPDF = (customer, user, transactions) => {
         const amountStr = `${currency} ${tx.amount.toFixed(2)}`;
         const balStr = `${currency} ${runningBalance.toFixed(2)}`;
 
-        // Check page overflow
+        // Add a new page if we're running out of vertical space
         if (currentY > 750) {
           doc.addPage();
           currentY = 50;
@@ -128,6 +158,7 @@ const generateStatementPDF = (customer, user, transactions) => {
         doc
           .text(dateStr, 50, currentY)
           .text(descStr, 150, currentY, { width: 160, lineBreak: false })
+          // Color-code: red for credit given, green for payment received
           .fillColor(tx.type === 'give' ? '#DC2626' : '#059669')
           .text(typeStr, 320, currentY)
           .fillColor('#4B5563')

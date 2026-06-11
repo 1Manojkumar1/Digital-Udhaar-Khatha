@@ -1,3 +1,11 @@
+/**
+ * SearchBar — Text Input with Clear Button
+ *
+ * Controlled search input with a magnifying glass icon on the left and
+ * a clear (X) button that appears when there is text. Debouncing is
+ * handled by the parent component (typically 250ms delay).
+ */
+
 import React from 'react';
 import { Search, X } from 'lucide-react';
 

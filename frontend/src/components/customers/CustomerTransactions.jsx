@@ -1,3 +1,17 @@
+/**
+ * CustomerTransactions — Timeline Transaction Log
+ *
+ * Renders a customer's transaction history as a vertical timeline grouped by date.
+ * Each transaction entry shows:
+ *   - Type pill (You Gave / You Got) with color-coded indicator bar
+ *   - Description and optional receipt photo link
+ *   - Amount with currency formatting and timestamp
+ *   - Edit and delete action buttons
+ *
+ * Uses groupTransactionsByDate() to cluster entries under date headers.
+ * Receipt photos open in a ReceiptPreviewModal on click.
+ */
+
 import React, { useState } from 'react';
 import { Edit2, Trash2, FileText, Image as ImageIcon } from 'lucide-react';
 import { getTransactionStyle, groupTransactionsByDate } from '../../transactions/transactionUtils';

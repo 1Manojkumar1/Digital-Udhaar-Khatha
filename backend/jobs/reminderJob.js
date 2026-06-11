@@ -1,3 +1,19 @@
+/**
+ * Reminder Cron Job
+ *
+ * Runs every minute to process payment reminders. Has two phases:
+ *
+ * Phase 1 — Process Due Reminders:
+ *   Finds all pending reminders where scheduledDate <= now, checks
+ *   conditions (balance, min days), sends notifications, then either
+ *   completes or reschedules based on recurrence settings.
+ *
+ * Phase 2 — Ensure Coverage:
+ *   Scans all customers with outstanding balance and creates reminders
+ *   for any that don't already have a pending or failed one. This acts
+ *   as a safety net so no customer is ever forgotten.
+ */
+
 import cron from 'node-cron';
 import Reminder from '../models/Reminder.js';
 import Customer from '../models/Customer.js';
@@ -5,6 +21,11 @@ import User from '../models/User.js';
 import notificationService from '../services/notificationService.js';
 import reminderService from '../services/reminderService.js';
 
+/**
+ * Safety net: ensures every customer with debt has at least one active
+ * reminder. Creates missing reminders using the customer's configured
+ * interval settings.
+ */
 const ensureReminderCoverage = async () => {
   try {
     const customers = await Customer.find({ netBalance: { $gt: 0 } });
@@ -46,7 +67,12 @@ const ensureReminderCoverage = async () => {
   }
 };
 
+/**
+ * Initializes the cron job scheduler.
+ * Runs the reminder processing loop every minute (* * * * *).
+ */
 const initReminderJob = () => {
+  // Schedule the job to run every minute
   cron.schedule('* * * * *', async () => {
     // Phase 1: Process due reminders
     try {

@@ -1,3 +1,19 @@
+/**
+ * Reminders — Reminder Management Page
+ *
+ * Centralized view for all scheduled, sent, failed, and completed reminders.
+ *
+ * Features:
+ *   - Status filter tabs (all, pending, sent, failed, completed)
+ *   - Each reminder shows: status badge, recurrence pattern, customer name,
+ *     message preview, scheduled date, balance, and sent count
+ *   - Actions: Send Now (for pending), Cancel (for pending)
+ *   - Batch Schedule modal: schedules reminders for ALL customers with
+ *     outstanding dues in one action, using each customer's individual
+ *     reminder settings
+ *   - Manual refresh button
+ */
+
 import React, { useEffect, useState, useCallback } from 'react';
 import { Bell, Send, Trash2, AlertTriangle, CheckCircle2, Clock, Filter, RefreshCw, Loader2 } from 'lucide-react';
 import useAuth from '../auth/useAuth';

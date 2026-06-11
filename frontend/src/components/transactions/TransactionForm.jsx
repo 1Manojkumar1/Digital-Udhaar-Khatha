@@ -1,3 +1,20 @@
+/**
+ * TransactionForm — Create/Edit Transaction Entry
+ *
+ * Form for recording new credit transactions or editing existing ones.
+ * Supports two modes:
+ *   - "Give" (merchant gave credit / customer owes money) — red accent
+ *   - "Take" (merchant received payment / customer paid) — green accent
+ *
+ * Features:
+ *   - Give/Take toggle slider
+ *   - Amount input with dynamic color border
+ *   - Description text field
+ *   - Date picker (defaults to today for new entries)
+ *   - Receipt image upload with preview and 5MB size limit
+ *   - Uses FormData for file upload support
+ */
+
 import React, { useState, useEffect, useRef } from 'react';
 import { CreditCard, FileText, Image as ImageIcon, Calendar, Loader2, X, Plus, AlertCircle } from 'lucide-react';
 import formatDate from '../../utils/formatDate';

@@ -1,3 +1,19 @@
+/**
+ * CredBook — Backend Server Entry Point
+ *
+ * Sets up the Express application with middleware, routes, and the
+ * background reminder cron job. Connects to MongoDB on startup and
+ * begins listening for HTTP requests.
+ *
+ * Middleware stack:
+ *   1. CORS — configurable allowed origins
+ *   2. JSON body parser
+ *   3. Static file serving for receipt uploads
+ *   4. API routes (auth, customers, transactions, reminders, statements)
+ *   5. 404 catch-all
+ *   6. Global error handler
+ */
+
 import 'dotenv/config';
 import express from 'express';
 import cors from 'cors';
@@ -14,10 +30,12 @@ import transactionRoutes from './routes/transactionRoutes.js';
 import reminderRoutes from './routes/reminderRoutes.js';
 import statementRoutes from './routes/statementRoutes.js';
 
-
+// Create the Express application instance
 const app = express();
 
-// Create uploads folder if it doesn't exist
+// ── Ensure uploads directory exists ─────────────────────────────────────
+// Receipt images are stored here. The directory is created at startup
+// if it doesn't already exist.
 const uploadsDir = './uploads';
 if (!fs.existsSync(uploadsDir)) {
   fs.mkdirSync(uploadsDir);

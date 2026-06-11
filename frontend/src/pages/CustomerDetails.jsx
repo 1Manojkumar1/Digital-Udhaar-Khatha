@@ -1,3 +1,19 @@
+/**
+ * CustomerDetails — Individual Customer Ledger Page
+ *
+ * The most feature-rich page, showing everything for a single customer:
+ *   1. Back button + page header
+ *   2. CustomerProfile card (name, contact, balance, reminder config)
+ *   3. Reminder controls (Send Preview test email + Schedule button)
+ *   4. Transaction timeline (CustomerTransactions) with edit/delete
+ *   5. Give/Take action buttons to add new transactions
+ *   6. PDF export button (downloads statement via backend)
+ *   7. Delete profile button (with confirmation)
+ *
+ * All mutations (add/edit/delete transaction, delete customer, test email,
+ * export PDF) reload the ledger data to keep the view in sync.
+ */
+
 import React, { useEffect, useState, useCallback } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { ArrowLeft, Plus, Download, MessageSquare, AlertCircle, Trash2, ShieldAlert, Send, CheckCircle2, Loader2 } from 'lucide-react';

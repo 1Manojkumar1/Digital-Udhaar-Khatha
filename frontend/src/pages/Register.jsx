@@ -1,3 +1,11 @@
+/**
+ * Register Page
+ *
+ * Renders the registration form inside the AuthLayout.
+ * On successful registration, navigates to the dashboard (/).
+ * Includes a link to the login page for existing merchants.
+ */
+
 import React from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import AuthLayout from '../layouts/AuthLayout';

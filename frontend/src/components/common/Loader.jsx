@@ -1,3 +1,12 @@
+/**
+ * Loader — Loading State Indicator
+ *
+ * Renders a double-ring spinner animation with an optional text message.
+ * Supports two modes:
+ *   - fullPage=true: fixed fullscreen overlay with backdrop blur (for page transitions)
+ *   - fullPage=false: inline spinner (for section-level loading states)
+ */
+
 import React from 'react';
 
 const Loader = ({ fullPage = false, message = 'Loading ledger details...' }) => {

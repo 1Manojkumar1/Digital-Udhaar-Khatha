@@ -1,6 +1,24 @@
+/**
+ * Email Configuration & Sending Module
+ *
+ * Uses a Google Apps Script web app as an email relay to send transactional
+ * emails (e.g. payment reminders) via Gmail. This avoids storing SMTP
+ * credentials directly in the app and leverages Google's mail infrastructure.
+ *
+ * If the EMAIL_APPS_SCRIPT_URL env var is not set the module falls back to
+ * console logging — useful during local development when no email service
+ * is available.
+ *
+ * Exports:
+ *   - sendEmail(to, subject, text, html, options) — sends an email
+ *   - ready            — boolean indicating whether the relay is configured
+ *   - makeHtml(data)   — builds the HTML body for a payment-reminder email
+ */
+
 const appsScriptUrl = process.env.EMAIL_APPS_SCRIPT_URL;
 const fromName = process.env.EMAIL_FROM_NAME || 'Udhar Khatha';
 
+// Flag that determines whether real emails can be sent or only logged.
 let emailReady = false;
 
 if (appsScriptUrl) {
@@ -10,6 +28,23 @@ if (appsScriptUrl) {
   console.log('EMAIL_APPS_SCRIPT_URL not provided. Emails will be logged to console.');
 }
 
+/**
+ * Builds a self-contained HTML email body for a payment reminder.
+ *
+ * The template uses inline styles (required for most email clients) and a
+ * table-based layout for maximum compatibility. The design is branded with
+ * the shop name and includes the customer's outstanding balance formatted
+ * with Indian-locale number separators.
+ *
+ * @param {Object}  data
+ * @param {string}  data.customerName  - Name of the customer being reminded
+ * @param {string}  data.shopName      - Name of the shop sending the reminder
+ * @param {number}  data.balance       - Outstanding balance (absolute value)
+ * @param {string}  data.currency      - Currency code (e.g. "INR")
+ * @param {string}  [data.phone]       - Shop contact phone (optional)
+ * @param {string}  [data.email]       - Shop email address (optional)
+ * @returns {string} Complete HTML email markup
+ */
 const makeHtml = ({ customerName, shopName, balance, currency, phone, email: shopEmail }) => `
 <!DOCTYPE html>
 <html>
@@ -46,7 +81,30 @@ const makeHtml = ({ customerName, shopName, balance, currency, phone, email: sho
 </html>
 `;
 
+/**
+ * Sends an email via the Google Apps Script relay.
+ *
+ * In development (when appsScriptUrl is not set), the email content is
+ * printed to the console instead — this lets the team test reminder
+ * workflows without a real mail service.
+ *
+ * The Apps Script endpoint expects a JSON body with `to`, `subject`,
+ * `text`, `html`, `fromName`, and optional `replyTo` fields. It must
+ * return `application/json`; a non-JSON response usually means the
+ * script URL is wrong or the script needs re-authorization in Google.
+ *
+ * @param {string}  to           - Recipient email address
+ * @param {string}  subject      - Email subject line
+ * @param {string}  text         - Plain-text fallback body
+ * @param {string}  html         - HTML email body
+ * @param {Object}  [options]    - Additional send options
+ * @param {string}  [options.fromName]  - Override display name of sender
+ * @param {string}  [options.replyTo]   - Reply-To header address
+ * @returns {Promise<{success: boolean, messageId: string}>}
+ * @throws {Error} If the relay returns an error or is unreachable
+ */
 const sendEmail = async (to, subject, text, html, options = {}) => {
+  // No relay configured — log to console and pretend it succeeded.
   if (!emailReady) {
     console.log(`\n[DEV LOG] Email → ${to}`);
     console.log(`Subject: "${subject}"`);
@@ -64,6 +122,8 @@ const sendEmail = async (to, subject, text, html, options = {}) => {
     const contentType = response.headers.get('content-type') || '';
     const raw = await response.text();
 
+    // A non-JSON response almost always means the Apps Script URL is wrong,
+    // the deployment is stale, or the script lost authorization.
     if (!contentType.includes('application/json')) {
       console.error(`[Email] Apps Script returned non-JSON (${contentType}). URL may be wrong or needs reauthorization.`);
       throw new Error('Apps Script URL is invalid or not deployed. Check your EMAIL_APPS_SCRIPT_URL.');
@@ -71,6 +131,8 @@ const sendEmail = async (to, subject, text, html, options = {}) => {
 
     const result = JSON.parse(raw);
 
+    // The Apps Script itself can return an { error: "..." } payload for
+    // issues like invalid recipient addresses or quota limits.
     if (result.error) {
       console.error(`[Email] Apps Script error for ${to}: ${result.error}`);
       throw new Error(result.error);

@@ -1,3 +1,16 @@
+/**
+ * DashboardLayout — Authenticated App Shell
+ *
+ * Provides the persistent navigation structure for all protected pages:
+ *   - Left sidebar (desktop): brand logo, user profile, nav links, logout
+ *   - Left drawer (mobile): slide-in navigation overlay
+ *   - Top navbar: shop name, currency badge, email status indicator, user avatar
+ *   - Main content area: scrollable container for child page content
+ *
+ * Navigation links:
+ *   / (Dashboard), /customers, /transactions, /statements, /reminders
+ */
+
 import React, { useState } from 'react';
 import { Menu, X, Store, LogOut, LayoutDashboard, Users, CreditCard, FileText, Bell } from 'lucide-react';
 import { NavLink, useNavigate } from 'react-router-dom';

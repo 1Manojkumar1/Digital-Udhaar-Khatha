@@ -1,3 +1,12 @@
+/**
+ * Modal — Reusable Dialog Overlay
+ *
+ * Generic modal component with backdrop blur, close-on-backdrop-click,
+ * body scroll lock while open, and configurable size (sm/md/lg/xl).
+ * Used for customer forms, transaction forms, reminder scheduling,
+ * and confirmation dialogs throughout the app.
+ */
+
 import React, { useEffect } from 'react';
 import { X } from 'lucide-react';
 

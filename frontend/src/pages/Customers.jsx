@@ -1,3 +1,17 @@
+/**
+ * Customers — Customer Directory Page
+ *
+ * Full customer management page with:
+ *   - Header with "Add New Customer" button
+ *   - Search bar with debounced server-side search (250ms delay)
+ *   - Desktop: CustomerTable (full table view)
+ *   - Mobile: CustomerCard grid (card layout)
+ *   - Create/Edit modal using CustomerForm
+ *
+ * Supports CRUD operations: create, update, delete (with confirmation),
+ * and navigation to individual customer detail pages.
+ */
+
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { UserPlus, Search, AlertCircle, RefreshCw } from 'lucide-react';

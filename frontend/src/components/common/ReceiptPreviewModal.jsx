@@ -1,3 +1,12 @@
+/**
+ * ReceiptPreviewModal — Transaction Receipt Image Viewer
+ *
+ * Opens a Modal displaying the receipt photo attached to a transaction.
+ * Includes an "Open in new tab" link for full-resolution viewing.
+ * The receipt URL is prepended with API_BASE_URL since it's a relative path
+ * stored on the backend.
+ */
+
 import React from 'react';
 import { ExternalLink } from 'lucide-react';
 import Modal from './Modal';
