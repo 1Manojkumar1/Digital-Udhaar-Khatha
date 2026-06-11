@@ -1,14 +1,13 @@
-const apiKey = process.env.EMAIL_API_KEY;
-const fromEmail = process.env.EMAIL_FROM_ADDRESS || 'noreply@yourdomain.com';
+const appsScriptUrl = process.env.EMAIL_APPS_SCRIPT_URL;
 const fromName = process.env.EMAIL_FROM_NAME || 'Udhar Khatha';
 
 let emailReady = false;
 
-if (apiKey) {
+if (appsScriptUrl) {
   emailReady = true;
-  console.log('Email API configured.');
+  console.log('Google Apps Script email relay configured.');
 } else {
-  console.log('EMAIL_API_KEY not provided. Emails will be logged to console.');
+  console.log('EMAIL_APPS_SCRIPT_URL not provided. Emails will be logged to console.');
 }
 
 const makeHtml = ({ customerName, shopName, balance, currency }) => `
@@ -55,31 +54,21 @@ const sendEmail = async (to, subject, text, html) => {
   }
 
   try {
-    const response = await fetch('https://api.elasticemail.com/v2/email/send', {
+    const response = await fetch(appsScriptUrl, {
       method: 'POST',
-      headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-      body: new URLSearchParams({
-        apikey: apiKey,
-        from: fromEmail,
-        fromName: fromName,
-        to: to,
-        subject: subject,
-        bodyHtml: html,
-        bodyText: text,
-        isTransactional: 'true',
-      }).toString(),
+      headers: { 'Content-Type': 'text/plain' },
+      body: JSON.stringify({ to, subject, text, html, fromName }),
     });
 
     const result = await response.json();
 
-    if (result.success === false || result.error) {
-      const errMsg = result.error || JSON.stringify(result);
-      console.error(`[Email] Elastic Email error for ${to}: ${errMsg}`);
-      throw new Error(errMsg);
+    if (result.error) {
+      console.error(`[Email] Apps Script error for ${to}: ${result.error}`);
+      throw new Error(result.error);
     }
 
-    console.log(`[Email] Sent to ${to}: ID ${result.data || 'ok'}`);
-    return { success: true, messageId: result.data || 'elastic-sent' };
+    console.log(`[Email] Sent to ${to}: ID ${result.messageId || 'ok'}`);
+    return { success: true, messageId: result.messageId || 'apps-script-sent' };
   } catch (error) {
     console.error(`[Email] Failed to send to ${to}:`, error.message);
     throw error;
