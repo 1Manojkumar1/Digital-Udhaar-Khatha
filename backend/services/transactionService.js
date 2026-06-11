@@ -53,7 +53,7 @@ const addTransaction = async ({ customerId, userId, amount, type, description, d
           customer: customerId,
           user: userId,
           scheduledDate,
-          message: `Dear ${customer.name}, you have an outstanding balance of ${currency} ${newBalance} at ${user?.shopName || 'our store'}. Please clear your dues. Thank you!`,
+          message: `Dear ${customer.name}, you have an outstanding balance of ${currency} ${newBalance} at ${(user?.shopName || 'our store').replace(/\b\w/g, c => c.toUpperCase())}. Please clear your dues. Thank you!`,
           status: 'pending',
           recurrencePattern: 'daily',
           recurrenceInterval: repeatValue,

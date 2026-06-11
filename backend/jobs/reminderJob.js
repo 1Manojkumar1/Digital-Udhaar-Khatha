@@ -32,7 +32,7 @@ const ensureReminderCoverage = async () => {
         customer: customer._id,
         user: customer.user,
         scheduledDate,
-        message: `Dear ${customer.name}, you have an outstanding balance of ${currency} ${customer.netBalance} at ${user?.shopName || 'our store'}. Please clear your dues. Thank you!`,
+        message: `Dear ${customer.name}, you have an outstanding balance of ${currency} ${customer.netBalance} at ${(user?.shopName || 'our store').replace(/\b\w/g, c => c.toUpperCase())}. Please clear your dues. Thank you!`,
         status: 'pending',
         recurrencePattern: 'daily',
         recurrenceInterval: repeatValue,

@@ -232,7 +232,7 @@ const CustomerDetails = () => {
               ) : (
                 <Send className="w-4 h-4" />
               )}
-              <span>{testSending ? 'Sending...' : testResult === 'success' ? 'Sent!' : testResult === 'error' ? 'Failed' : 'Test Email'}</span>
+              <span>{testSending ? 'Sending...' : testResult === 'success' ? 'Sent!' : testResult === 'error' ? 'Failed' : 'Send Preview'}</span>
             </button>
             <ReminderButton
               customer={activeCustomer}

@@ -157,6 +157,7 @@ router.post('/batch', authMiddleware, async (req, res, next) => {
     const user = await User.findById(req.user._id);
     const currency = user?.currency || 'INR';
     const shopName = user?.shopName || 'our store';
+    const capitalizedShopName = shopName.replace(/\b\w/g, c => c.toUpperCase());
 
     const customers = await Customer.find({
       user: req.user._id,
@@ -181,7 +182,7 @@ router.post('/batch', authMiddleware, async (req, res, next) => {
       const repeatValue = customer.repeatIntervalValue ?? 1;
       const repeatUnit = customer.repeatIntervalUnit || 'days';
 
-      const defaultMessage = `Dear ${customer.name}, you have an outstanding balance of ${currency} ${customer.netBalance} at ${shopName}. Please clear your dues. Thank you!`;
+      const defaultMessage = `Dear ${customer.name}, you have an outstanding balance of ${currency} ${customer.netBalance} at ${capitalizedShopName}. Please clear your dues. Thank you!`;
 
       await Reminder.create({
         customer: customer._id,
@@ -237,7 +238,7 @@ router.delete('/:id', authMiddleware, async (req, res, next) => {
         customer: customer._id,
         user: req.user._id,
         scheduledDate,
-        message: `Dear ${customer.name}, you have an outstanding balance of ${currency} ${customer.netBalance} at ${user?.shopName || 'our store'}. Please clear your dues. Thank you!`,
+        message: `Dear ${customer.name}, you have an outstanding balance of ${currency} ${customer.netBalance} at ${(user?.shopName || 'our store').replace(/\b\w/g, c => c.toUpperCase())}. Please clear your dues. Thank you!`,
         status: 'pending',
         recurrencePattern: 'daily',
         recurrenceInterval: repeatValue,
@@ -272,15 +273,16 @@ router.post('/send-test', authMiddleware, async (req, res, next) => {
 
     const shopName = req.user.shopName || 'Udhar Khatha';
     const currency = req.user.currency || 'INR';
-    const text = `Dear ${customer.name},\n\nThis is a test email from ${shopName}.\n\nThank you for using our services.`;
-    const html = email.makeHtml({ customerName: customer.name, shopName, balance: customer.netBalance, currency });
-    const subject = `Test Email from ${shopName}`;
+    const capitalizedShopName = shopName.replace(/\b\w/g, c => c.toUpperCase());
+    const text = `Dear ${customer.name},\n\nThis is a preview email sent from ${capitalizedShopName}.\n\nThank you for using our services.`;
+    const html = email.makeHtml({ customerName: customer.name, shopName: capitalizedShopName, balance: customer.netBalance, currency });
+    const subject = `Payment Reminder from ${capitalizedShopName}`;
 
     const result = await email.sendEmail(customer.email, subject, text, html);
 
     res.status(200).json({
       success: true,
-      message: 'Test email sent',
+      message: 'Preview email sent',
       data: { customer: customer.name, email: customer.email, result },
     });
   } catch (error) {
