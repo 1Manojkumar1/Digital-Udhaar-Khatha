@@ -37,7 +37,7 @@ const makeHtml = ({ customerName, shopName, balance, currency, phone, email: sho
         </td></tr>
         <tr><td style="border-top:1px solid #e2e8f0;padding:16px 32px;text-align:center">
           ${phone || shopEmail ? `<p style="margin:0 0 4px;font-size:12px;color:#64748b">${phone ? `Contact: <strong>${phone}</strong>` : ''}${phone && shopEmail ? ' | ' : ''}${shopEmail ? `Email: <strong>${shopEmail}</strong>` : ''}</p>` : ''}
-          <p style="margin:0;font-size:11px;color:#94a3b8">Sent via <strong style="color:#64748b">Udhar Khatha</strong></p>
+          <p style="margin:0;font-size:11px;color:#94a3b8">Sent via <strong style="color:#64748b">CredBook</strong></p>
         </td></tr>
       </table>
     </td></tr>
