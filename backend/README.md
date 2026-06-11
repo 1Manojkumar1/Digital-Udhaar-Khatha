@@ -51,44 +51,44 @@ backend/
 
 ## Environment Variables
 
-| Variable | Required | Default | Description |
-|----------|----------|---------|-------------|
-| `PORT` | No | `5000` | Server port |
-| `DB_URL` | Yes | — | MongoDB connection string |
-| `JWT_SECRET` | Yes | — | Secret for JWT signing |
-| `CORS_ORIGIN` | No | `*` | Comma-separated allowed origins |
-| `EMAIL_APPS_SCRIPT_URL` | No | — | Google Apps Script web app URL |
-| `EMAIL_FROM_NAME` | No | `CredBook` | Default sender display name |
-| `NODE_ENV` | No | — | Set to `production` for live |
+| Variable | Default | Description |
+|----------|---------|-------------|
+| `PORT` | `5000` | Server port |
+| `DB_URL` | — | MongoDB connection string |
+| `JWT_SECRET` | — | Secret for JWT signing |
+| `CORS_ORIGIN` | `*` | Comma-separated allowed origins |
+| `EMAIL_APPS_SCRIPT_URL` | — | Google Apps Script web app URL |
+| `EMAIL_FROM_NAME` | `CredBook` | Default sender display name |
+| `NODE_ENV` | — | Set to `production` for live |
 
 ## API Endpoints
 
 ### Auth (`/api/auth`)
 
-| Method | Endpoint | Auth | Rate Limit | Description |
-|--------|----------|------|------------|-------------|
-| POST | `/register` | No | 10/15min | Register shopkeeper |
-| POST | `/login` | No | 10/15min | Login shopkeeper |
-| GET | `/profile` | Yes | — | Get current user profile |
+| Method | Endpoint | Rate Limit | Description |
+|--------|----------|------------|-------------|
+| POST | `/register` | 10/15min | Register shopkeeper |
+| POST | `/login` | 10/15min | Login shopkeeper |
+| GET | `/profile` | — | Get current user profile |
 
 ### Customers (`/api/customers`)
 
-| Method | Endpoint | Auth | Description |
-|--------|----------|------|-------------|
-| GET | `/` | Yes | List customers (search, pagination) |
-| GET | `/:id` | Yes | Get customer by ID |
-| POST | `/` | Yes | Create new customer |
-| PUT | `/:id` | Yes | Update customer |
-| DELETE | `/:id` | Yes | Delete customer + related data |
+| Method | Endpoint | Description |
+|--------|----------|-------------|
+| GET | `/` | List customers (search, pagination) |
+| GET | `/:id` | Get customer by ID |
+| POST | `/` | Create new customer |
+| PUT | `/:id` | Update customer |
+| DELETE | `/:id` | Delete customer + related data |
 
 ### Transactions (`/api/transactions`)
 
-| Method | Endpoint | Auth | Description |
-|--------|----------|------|-------------|
-| GET | `/customer/:customerId` | Yes | Get transactions for customer |
-| POST | `/` | Yes | Create transaction (multipart/form-data) |
-| PUT | `/:id` | Yes | Update transaction |
-| DELETE | `/:id` | Yes | Delete transaction |
+| Method | Endpoint | Description |
+|--------|----------|-------------|
+| GET | `/customer/:customerId` | Get transactions for customer |
+| POST | `/` | Create transaction (multipart/form-data) |
+| PUT | `/:id` | Update transaction |
+| DELETE | `/:id` | Delete transaction |
 
 **Transaction Types:**
 - `give` — You gave credit to customer (increases their debt)
@@ -96,22 +96,22 @@ backend/
 
 ### Reminders (`/api/reminders`)
 
-| Method | Endpoint | Auth | Description |
-|--------|----------|------|-------------|
-| GET | `/stats` | Yes | Get today/monthly email count |
-| GET | `/` | Yes | List reminders (filter by status) |
-| GET | `/customer/:customerId` | Yes | Get reminders for a customer |
-| POST | `/` | Yes | Schedule a new reminder |
-| POST | `/:id/send-now` | Yes | Send reminder immediately |
-| POST | `/batch` | Yes | Batch schedule for all due customers |
-| POST | `/send-test` | Yes | Send preview email to customer |
-| DELETE | `/:id` | Yes | Cancel a reminder |
+| Method | Endpoint | Description |
+|--------|----------|-------------|
+| GET | `/stats` | Get today/monthly email count |
+| GET | `/` | List reminders (filter by status) |
+| GET | `/customer/:customerId` | Get reminders for a customer |
+| POST | `/` | Schedule a new reminder |
+| POST | `/:id/send-now` | Send reminder immediately |
+| POST | `/batch` | Batch schedule for all due customers |
+| POST | `/send-test` | Send preview email to customer |
+| DELETE | `/:id` | Cancel a reminder |
 
 ### Statements (`/api/statements`)
 
-| Method | Endpoint | Auth | Description |
-|--------|----------|------|-------------|
-| GET | `/customer/:customerId/pdf` | Yes | Download PDF statement |
+| Method | Endpoint | Description |
+|--------|----------|-------------|
+| GET | `/customer/:customerId/pdf` | Download PDF statement |
 
 **Query Parameters:**
 - `from` — Start date (ISO string)
