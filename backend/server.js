@@ -31,6 +31,11 @@ app.use(express.json());
 // Serve uploaded receipts static files
 app.use('/uploads', express.static(path.join(process.cwd(), 'uploads')));
 
+// Health check / root route
+app.get('/', (req, res) => {
+  res.json({ status: 'ok', message: 'Digital Udhaar Khatha API is running' });
+});
+
 // Register API Routes
 app.use('/api/auth', authRoutes);
 app.use('/api/customers', customerRoutes);
