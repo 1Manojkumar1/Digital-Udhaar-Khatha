@@ -1,4 +1,8 @@
 import nodemailer from 'nodemailer';
+import dns from 'dns';
+
+// Force IPv4 to avoid ENETUNREACH on Render (no IPv6 support)
+dns.setDefaultResultOrder('ipv4first');
 
 const user = process.env.EMAIL_USER;
 const pass = process.env.EMAIL_PASS;
@@ -10,6 +14,7 @@ if (user && pass) {
   transporter = nodemailer.createTransport({
     service: 'gmail',
     auth: { user, pass },
+    connectionTimeout: 10000,
   });
   console.log('Gmail SMTP configured.');
 } else {
