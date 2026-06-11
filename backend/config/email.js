@@ -1,14 +1,14 @@
-const brevoApiKey = process.env.BREVO_API_KEY;
-const brevoSenderEmail = process.env.BREVO_SENDER_EMAIL || 'noreply@yourdomain.com';
-const brevoSenderName = process.env.BREVO_SENDER_NAME || 'Udhar Khatha';
+const apiKey = process.env.EMAIL_API_KEY;
+const fromEmail = process.env.EMAIL_FROM_ADDRESS || 'noreply@yourdomain.com';
+const fromName = process.env.EMAIL_FROM_NAME || 'Udhar Khatha';
 
-let brevoReady = false;
+let emailReady = false;
 
-if (brevoApiKey) {
-  brevoReady = true;
-  console.log('Brevo email API configured.');
+if (apiKey) {
+  emailReady = true;
+  console.log('Email API configured.');
 } else {
-  console.log('BREVO_API_KEY not provided. Emails will be logged to console.');
+  console.log('EMAIL_API_KEY not provided. Emails will be logged to console.');
 }
 
 const makeHtml = ({ customerName, shopName, balance, currency }) => `
@@ -47,7 +47,7 @@ const makeHtml = ({ customerName, shopName, balance, currency }) => `
 `;
 
 const sendEmail = async (to, subject, text, html) => {
-  if (!brevoReady) {
+  if (!emailReady) {
     console.log(`\n[DEV LOG] Email → ${to}`);
     console.log(`Subject: "${subject}"`);
     console.log(`Body: "${text}"\n`);
@@ -55,36 +55,35 @@ const sendEmail = async (to, subject, text, html) => {
   }
 
   try {
-    const response = await fetch('https://api.brevo.com/v3/smtp/email', {
+    const response = await fetch('https://api.elasticemail.com/v2/email/send', {
       method: 'POST',
-      headers: {
-        'accept': 'application/json',
-        'content-type': 'application/json',
-        'api-key': brevoApiKey,
-      },
-      body: JSON.stringify({
-        sender: { name: brevoSenderName, email: brevoSenderEmail },
-        to: [{ email: to }],
-        subject,
-        htmlContent: html,
-        textContent: text,
-      }),
+      headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+      body: new URLSearchParams({
+        apikey: apiKey,
+        from: fromEmail,
+        fromName: fromName,
+        to: to,
+        subject: subject,
+        bodyHtml: html,
+        bodyText: text,
+        isTransactional: 'true',
+      }).toString(),
     });
 
-    const data = await response.json();
+    const result = await response.json();
 
-    if (!response.ok) {
-      const errMsg = data.message || JSON.stringify(data);
-      console.error(`[Email] Brevo error for ${to}: ${errMsg}`);
+    if (result.success === false || result.error) {
+      const errMsg = result.error || JSON.stringify(result);
+      console.error(`[Email] Elastic Email error for ${to}: ${errMsg}`);
       throw new Error(errMsg);
     }
 
-    console.log(`[Email] Sent to ${to}: ID ${data.messageId}`);
-    return { success: true, messageId: data.messageId };
+    console.log(`[Email] Sent to ${to}: ID ${result.data || 'ok'}`);
+    return { success: true, messageId: result.data || 'elastic-sent' };
   } catch (error) {
     console.error(`[Email] Failed to send to ${to}:`, error.message);
     throw error;
   }
 };
 
-export default { sendEmail, ready: brevoReady, makeHtml };
+export default { sendEmail, ready: emailReady, makeHtml };
