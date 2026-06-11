@@ -13,14 +13,18 @@ let transporter = null;
 if (user && pass) {
   transporter = nodemailer.createTransport({
     host: 'smtp.gmail.com',
-    port: 465,
-    secure: true,
+    port: 587,
+    secure: false,
     auth: { user, pass },
-    connectionTimeout: 10000,
-    tls: { rejectUnauthorized: false },
+    connectionTimeout: 15000,
+    socketTimeout: 20000,
+    tls: { 
+      rejectUnauthorized: false,
+      minVersion: 'TLSv1.2',
+    },
     family: 4,
   });
-  console.log('Gmail SMTP configured (IPv4 forced).');
+  console.log('Gmail SMTP configured (port 587, IPv4 forced).');
 } else {
   console.log('Gmail credentials not provided. Emails will be logged to console.');
 }
@@ -68,16 +72,22 @@ const sendEmail = async (to, subject, text, html) => {
     return { success: true, messageId: 'dev-log' };
   }
 
-  const info = await transporter.sendMail({
-    from: `"${fromName}" <${user}>`,
-    to,
-    subject,
-    text,
-    html,
-  });
+  try {
+    const info = await transporter.sendMail({
+      from: `"${fromName}" <${user}>`,
+      to,
+      subject,
+      text,
+      html,
+    });
 
-  console.log(`[Email] Sent to ${to}: ID ${info.messageId}`);
-  return { success: true, messageId: info.messageId };
+    console.log(`[Email] Sent to ${to}: ID ${info.messageId}`);
+    return { success: true, messageId: info.messageId };
+  } catch (error) {
+    console.error(`[Email] Failed to send to ${to}:`, error.message);
+    if (error.code) console.error(`[Email] Error code: ${error.code}`);
+    throw error;
+  }
 };
 
 export default { sendEmail, ready: !!transporter, makeHtml };
