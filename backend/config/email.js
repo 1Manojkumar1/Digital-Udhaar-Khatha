@@ -1,8 +1,8 @@
 import nodemailer from 'nodemailer';
 import dns from 'dns';
+import { promisify } from 'util';
 
-// Force IPv4 to avoid ENETUNREACH on Render (no IPv6 support)
-dns.setDefaultResultOrder('ipv4first');
+const resolve4 = promisify(dns.resolve4);
 
 const user = process.env.EMAIL_USER;
 const pass = process.env.EMAIL_PASS;
@@ -10,24 +10,39 @@ const fromName = process.env.EMAIL_FROM_NAME || 'Udhar Khatha';
 
 let transporter = null;
 
-if (user && pass) {
-  transporter = nodemailer.createTransport({
-    host: 'smtp.gmail.com',
-    port: 587,
-    secure: false,
-    auth: { user, pass },
-    connectionTimeout: 15000,
-    socketTimeout: 20000,
-    tls: { 
-      rejectUnauthorized: false,
-      minVersion: 'TLSv1.2',
-    },
-    family: 4,
-  });
-  console.log('Gmail SMTP configured (port 587, IPv4 forced).');
-} else {
-  console.log('Gmail credentials not provided. Emails will be logged to console.');
+async function createTransporter() {
+  if (!user || !pass) {
+    console.log('Gmail credentials not provided. Emails will be logged to console.');
+    return;
+  }
+
+  try {
+    const addresses = await resolve4('smtp.gmail.com');
+    const ipv4Host = addresses[0];
+    console.log(`[Email] Resolved smtp.gmail.com → ${ipv4Host} (IPv4)`);
+
+    transporter = nodemailer.createTransport({
+      host: ipv4Host,
+      port: 587,
+      secure: false,
+      auth: { user, pass },
+      connectionTimeout: 15000,
+      socketTimeout: 20000,
+      tls: {
+        rejectUnauthorized: false,
+        minVersion: 'TLSv1.2',
+        servername: 'smtp.gmail.com',
+      },
+    });
+    console.log('Gmail SMTP configured successfully.');
+  } catch (err) {
+    console.error('[Email] Failed to resolve smtp.gmail.com:', err.message);
+    console.error('[Email] Falling back to console logging.');
+    transporter = null;
+  }
 }
+
+await createTransporter();
 
 const makeHtml = ({ customerName, shopName, balance, currency }) => `
 <!DOCTYPE html>

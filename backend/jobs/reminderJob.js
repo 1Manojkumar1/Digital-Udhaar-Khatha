@@ -13,7 +13,7 @@ const ensureReminderCoverage = async () => {
       const existing = await Reminder.findOne({
         customer: customer._id,
         user: customer.user,
-        status: 'pending',
+        status: { $in: ['pending', 'failed'] },
       });
       if (existing) continue;
 
