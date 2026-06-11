@@ -1,0 +1,33 @@
+### Get reminders for a customer
+GET http://localhost:5000/api/reminders/customer/6a1c51a084eee56df6004781
+
+### Schedule a new reminder
+POST http://localhost:5000/api/reminders
+Content-Type: application/json
+
+{
+    "customerId": "6a1c51a084eee56df6004781",
+    "scheduledDate": "2026-05-31T20:42:00",
+    "message": "Dear customer, this is a reminder to clear your pending dues.",
+    "channel": "whatsapp"
+}
+
+### Send reminder immediately (manual trigger)
+POST http://localhost:5000/api/reminders/6a1c4c71de0edc78040089dc/send-now
+
+### Cancel a scheduled reminder
+DELETE http://localhost:5000/api/reminders/6a1c4c71de0edc78040089dc
+
+
+
+### Reminders will schedule every 3 days for this customer
+POST http://localhost:5000/api/reminders
+Content-Type: application/json
+
+{
+  "name": "Amit Sharma",
+  "phone": "+919999888877",
+  "email": "amit.sharma@example.com",
+  "address": "Flat 102, Sector 15, Noida",
+  "reminderIntervalDays": 3
+}

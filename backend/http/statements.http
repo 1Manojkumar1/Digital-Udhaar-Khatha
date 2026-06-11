@@ -1,0 +1,5 @@
+### Download PDF statement (all transactions)
+GET http://localhost:5000/api/statements/customer/<customer_id>/pdf
+
+### Download PDF statement (filtered by date range)
+GET http://localhost:5000/api/statements/customer/<customer_id>/pdf?startDate=2026-05-01&endDate=2026-05-31

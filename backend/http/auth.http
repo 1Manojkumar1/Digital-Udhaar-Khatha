@@ -1,0 +1,24 @@
+### Register a new shopkeeper
+POST http://localhost:5000/api/auth/register
+Content-Type: application/json
+
+{
+    "name": "Rajesh Kumar",
+    "email": "rajesh@example.com",
+    "password": "password123",
+    "phone": "+919876543210",
+    "shopName": "Rajesh Kirana Store",
+    "currency": "INR"
+}
+
+### Login shopkeeper
+POST http://localhost:5000/api/auth/login
+Content-Type: application/json
+
+{
+    "email": "rajesh@example.com",
+    "password": "password123"
+}
+
+### Get shopkeeper profile
+GET http://localhost:5000/api/auth/profile

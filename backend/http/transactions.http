@@ -1,0 +1,38 @@
+### Get transactions for a customer
+GET http://localhost:5000/api/transactions/customer/<customer_id>
+
+### Add credit transaction (Udhar Given)
+POST http://localhost:5000/api/transactions
+Content-Type: application/json
+
+{
+    "customerId": "<customer_id>",
+    "amount": 2500.50,
+    "type": "give",
+    "description": "Sold 5 bags of cement",
+    "date": "2026-05-30T10:00:00Z"
+}
+
+### Add payment transaction (Paid Back)
+POST http://localhost:5000/api/transactions
+Content-Type: application/json
+
+{
+    "customerId": "<customer_id>",
+    "amount": 1000,
+    "type": "take",
+    "description": "Received partial cash payment",
+    "date": "2026-05-31T09:00:00Z"
+}
+
+### Update transaction details
+PUT http://localhost:5000/api/transactions/<transaction_id>
+Content-Type: application/json
+
+{
+    "amount": 2800,
+    "description": "Sold 5 bags of cement + 1 bag of sand"
+}
+
+### Delete a transaction
+DELETE http://localhost:5000/api/transactions/<transaction_id>

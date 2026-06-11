@@ -1,0 +1,45 @@
+### Get all customers
+GET http://localhost:5000/api/customers
+
+### Search customers by name or phone
+GET http://localhost:5000/api/customers?search=Amit
+
+### Get customer by ID
+GET http://localhost:5000/api/customers/<customer_id>
+
+### Create a new customer
+POST http://localhost:5000/api/customers
+Content-Type: application/json
+
+{
+    "name": "Amit Sharma",
+    "phone": "+919999888877",
+    "email": "amit.sharma@example.com",
+    "address": "Flat 102, Sector 15, Noida",
+    "reminderIntervalDays": 3
+}
+
+### Create another customer
+POST http://localhost:5000/api/customers
+Content-Type: application/json
+
+{
+    "name": "Sunita Verma",
+    "phone": "+918888777766",
+    "email": "sunita.v@example.com",
+    "address": "45-B, Mall Road, Shimla",
+    "reminderIntervalDays": 5
+}
+
+### Update customer details
+PUT http://localhost:5000/api/customers/<customer_id>
+Content-Type: application/json
+
+{
+    "email": "amit.newemail@example.com",
+    "address": "Flat 505, Block C, Noida Sector 62",
+    "reminderIntervalDays": 10
+}
+
+### Delete customer and all their transactions
+DELETE http://localhost:5000/api/customers/6a1c45f740d7cc9f95e15ff6
