@@ -1,16 +1,14 @@
-import { Resend } from 'resend';
+const brevoApiKey = process.env.BREVO_API_KEY;
+const brevoSenderEmail = process.env.BREVO_SENDER_EMAIL || 'noreply@yourdomain.com';
+const brevoSenderName = process.env.BREVO_SENDER_NAME || 'Udhar Khatha';
 
-const resendKey = process.env.RESEND_API_KEY;
-const fromEmail = process.env.EMAIL_FROM || 'Udhar Khatha <onboarding@resend.dev>';
-const fromName = process.env.EMAIL_FROM_NAME || 'Udhar Khatha';
+let brevoReady = false;
 
-let resend = null;
-
-if (resendKey) {
-  resend = new Resend(resendKey);
-  console.log('Resend email API configured.');
+if (brevoApiKey) {
+  brevoReady = true;
+  console.log('Brevo email API configured.');
 } else {
-  console.log('RESEND_API_KEY not provided. Emails will be logged to console.');
+  console.log('BREVO_API_KEY not provided. Emails will be logged to console.');
 }
 
 const makeHtml = ({ customerName, shopName, balance, currency }) => `
@@ -49,7 +47,7 @@ const makeHtml = ({ customerName, shopName, balance, currency }) => `
 `;
 
 const sendEmail = async (to, subject, text, html) => {
-  if (!resend) {
+  if (!brevoReady) {
     console.log(`\n[DEV LOG] Email → ${to}`);
     console.log(`Subject: "${subject}"`);
     console.log(`Body: "${text}"\n`);
@@ -57,25 +55,36 @@ const sendEmail = async (to, subject, text, html) => {
   }
 
   try {
-    const { data, error } = await resend.emails.send({
-      from: fromEmail,
-      to: [to],
-      subject,
-      text,
-      html,
+    const response = await fetch('https://api.brevo.com/v3/smtp/email', {
+      method: 'POST',
+      headers: {
+        'accept': 'application/json',
+        'content-type': 'application/json',
+        'api-key': brevoApiKey,
+      },
+      body: JSON.stringify({
+        sender: { name: brevoSenderName, email: brevoSenderEmail },
+        to: [{ email: to }],
+        subject,
+        htmlContent: html,
+        textContent: text,
+      }),
     });
 
-    if (error) {
-      console.error(`[Email] Resend error for ${to}:`, error.message);
-      throw new Error(error.message);
+    const data = await response.json();
+
+    if (!response.ok) {
+      const errMsg = data.message || JSON.stringify(data);
+      console.error(`[Email] Brevo error for ${to}: ${errMsg}`);
+      throw new Error(errMsg);
     }
 
-    console.log(`[Email] Sent to ${to}: ID ${data.id}`);
-    return { success: true, messageId: data.id };
+    console.log(`[Email] Sent to ${to}: ID ${data.messageId}`);
+    return { success: true, messageId: data.messageId };
   } catch (error) {
     console.error(`[Email] Failed to send to ${to}:`, error.message);
     throw error;
   }
 };
 
-export default { sendEmail, ready: !!resend, makeHtml };
+export default { sendEmail, ready: brevoReady, makeHtml };
