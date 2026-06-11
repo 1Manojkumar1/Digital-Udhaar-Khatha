@@ -12,11 +12,15 @@ let transporter = null;
 
 if (user && pass) {
   transporter = nodemailer.createTransport({
-    service: 'gmail',
+    host: 'smtp.gmail.com',
+    port: 465,
+    secure: true,
     auth: { user, pass },
     connectionTimeout: 10000,
+    tls: { rejectUnauthorized: false },
+    family: 4,
   });
-  console.log('Gmail SMTP configured.');
+  console.log('Gmail SMTP configured (IPv4 forced).');
 } else {
   console.log('Gmail credentials not provided. Emails will be logged to console.');
 }
