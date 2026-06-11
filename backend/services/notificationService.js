@@ -26,9 +26,9 @@ const sendNotification = async (reminder) => {
   const capitalizedShopName = shopName.replace(/\b\w/g, c => c.toUpperCase());
 
   const textMessage = reminder.message ||
-    `Dear ${customer.name}, you have an outstanding balance of ${currency} ${balance} at ${capitalizedShopName}. Please clear your dues at your earliest convenience.\n\nContact: ${user.phone}\n\nThank you!`;
+    `Dear ${customer.name}, you have an outstanding balance of ${currency} ${balance} at ${capitalizedShopName}. Please clear your dues at your earliest convenience.\n\nContact: ${user.phone} | Email: ${user.email}\n\nThank you!`;
 
-  const htmlMessage = email.makeHtml({ customerName: customer.name, shopName: capitalizedShopName, balance, currency, phone: user.phone });
+  const htmlMessage = email.makeHtml({ customerName: customer.name, shopName: capitalizedShopName, balance, currency, phone: user.phone, email: user.email });
 
   const subject = `Payment Reminder from ${capitalizedShopName}`;
 

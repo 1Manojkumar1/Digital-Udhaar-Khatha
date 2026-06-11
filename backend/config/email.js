@@ -10,7 +10,7 @@ if (appsScriptUrl) {
   console.log('EMAIL_APPS_SCRIPT_URL not provided. Emails will be logged to console.');
 }
 
-const makeHtml = ({ customerName, shopName, balance, currency, phone }) => `
+const makeHtml = ({ customerName, shopName, balance, currency, phone, email: shopEmail }) => `
 <!DOCTYPE html>
 <html>
 <head><meta charset="utf-8"></head>
@@ -36,7 +36,7 @@ const makeHtml = ({ customerName, shopName, balance, currency, phone }) => `
           <p style="margin:0;font-size:13px;color:#94a3b8;line-height:1.5">If you have already made the payment, please disregard this message. For any questions, feel free to contact us.</p>
         </td></tr>
         <tr><td style="border-top:1px solid #e2e8f0;padding:16px 32px;text-align:center">
-          ${phone ? `<p style="margin:0 0 4px;font-size:12px;color:#64748b">Contact: <strong>${phone}</strong></p>` : ''}
+          ${phone || shopEmail ? `<p style="margin:0 0 4px;font-size:12px;color:#64748b">${phone ? `Contact: <strong>${phone}</strong>` : ''}${phone && shopEmail ? ' | ' : ''}${shopEmail ? `Email: <strong>${shopEmail}</strong>` : ''}</p>` : ''}
           <p style="margin:0;font-size:11px;color:#94a3b8">Sent via <strong style="color:#64748b">Udhar Khatha</strong></p>
         </td></tr>
       </table>
