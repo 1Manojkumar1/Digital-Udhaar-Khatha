@@ -25,7 +25,11 @@ if (!fs.existsSync(uploadsDir)) {
 }
 
 // Global Middlewares
-app.use(cors());
+const allowedOrigins = process.env.CORS_ORIGIN ? process.env.CORS_ORIGIN.split(',') : '*';
+app.use(cors({
+  origin: allowedOrigins,
+  credentials: true,
+}));
 app.use(express.json());
 
 // Serve uploaded receipts static files
