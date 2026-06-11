@@ -1,48 +1,17 @@
-import nodemailer from 'nodemailer';
-import dns from 'dns';
-import { promisify } from 'util';
+import { Resend } from 'resend';
 
-const resolve4 = promisify(dns.resolve4);
-
-const user = process.env.EMAIL_USER;
-const pass = process.env.EMAIL_PASS;
+const resendKey = process.env.RESEND_API_KEY;
+const fromEmail = process.env.EMAIL_FROM || 'Udhar Khatha <onboarding@resend.dev>';
 const fromName = process.env.EMAIL_FROM_NAME || 'Udhar Khatha';
 
-let transporter = null;
+let resend = null;
 
-async function createTransporter() {
-  if (!user || !pass) {
-    console.log('Gmail credentials not provided. Emails will be logged to console.');
-    return;
-  }
-
-  try {
-    const addresses = await resolve4('smtp.gmail.com');
-    const ipv4Host = addresses[0];
-    console.log(`[Email] Resolved smtp.gmail.com → ${ipv4Host} (IPv4)`);
-
-    transporter = nodemailer.createTransport({
-      host: ipv4Host,
-      port: 587,
-      secure: false,
-      auth: { user, pass },
-      connectionTimeout: 15000,
-      socketTimeout: 20000,
-      tls: {
-        rejectUnauthorized: false,
-        minVersion: 'TLSv1.2',
-        servername: 'smtp.gmail.com',
-      },
-    });
-    console.log('Gmail SMTP configured successfully.');
-  } catch (err) {
-    console.error('[Email] Failed to resolve smtp.gmail.com:', err.message);
-    console.error('[Email] Falling back to console logging.');
-    transporter = null;
-  }
+if (resendKey) {
+  resend = new Resend(resendKey);
+  console.log('Resend email API configured.');
+} else {
+  console.log('RESEND_API_KEY not provided. Emails will be logged to console.');
 }
-
-await createTransporter();
 
 const makeHtml = ({ customerName, shopName, balance, currency }) => `
 <!DOCTYPE html>
@@ -80,7 +49,7 @@ const makeHtml = ({ customerName, shopName, balance, currency }) => `
 `;
 
 const sendEmail = async (to, subject, text, html) => {
-  if (!transporter) {
+  if (!resend) {
     console.log(`\n[DEV LOG] Email → ${to}`);
     console.log(`Subject: "${subject}"`);
     console.log(`Body: "${text}"\n`);
@@ -88,21 +57,25 @@ const sendEmail = async (to, subject, text, html) => {
   }
 
   try {
-    const info = await transporter.sendMail({
-      from: `"${fromName}" <${user}>`,
-      to,
+    const { data, error } = await resend.emails.send({
+      from: fromEmail,
+      to: [to],
       subject,
       text,
       html,
     });
 
-    console.log(`[Email] Sent to ${to}: ID ${info.messageId}`);
-    return { success: true, messageId: info.messageId };
+    if (error) {
+      console.error(`[Email] Resend error for ${to}:`, error.message);
+      throw new Error(error.message);
+    }
+
+    console.log(`[Email] Sent to ${to}: ID ${data.id}`);
+    return { success: true, messageId: data.id };
   } catch (error) {
     console.error(`[Email] Failed to send to ${to}:`, error.message);
-    if (error.code) console.error(`[Email] Error code: ${error.code}`);
     throw error;
   }
 };
 
-export default { sendEmail, ready: !!transporter, makeHtml };
+export default { sendEmail, ready: !!resend, makeHtml };
