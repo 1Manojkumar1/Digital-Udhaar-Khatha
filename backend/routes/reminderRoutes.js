@@ -274,11 +274,11 @@ router.post('/send-test', authMiddleware, async (req, res, next) => {
     const shopName = req.user.shopName || 'Udhar Khatha';
     const currency = req.user.currency || 'INR';
     const capitalizedShopName = shopName.replace(/\b\w/g, c => c.toUpperCase());
-    const text = `Dear ${customer.name},\n\nThis is a preview email sent from ${capitalizedShopName}.\n\nThank you for using our services.`;
-    const html = email.makeHtml({ customerName: customer.name, shopName: capitalizedShopName, balance: customer.netBalance, currency });
+    const text = `Dear ${customer.name},\n\nThis is a preview email sent from ${capitalizedShopName}.\n\nContact: ${req.user.phone}\n\nThank you for using our services.`;
+    const html = email.makeHtml({ customerName: customer.name, shopName: capitalizedShopName, balance: customer.netBalance, currency, phone: req.user.phone });
     const subject = `Payment Reminder from ${capitalizedShopName}`;
 
-    const result = await email.sendEmail(customer.email, subject, text, html, { fromName: capitalizedShopName });
+    const result = await email.sendEmail(customer.email, subject, text, html, { fromName: capitalizedShopName, replyTo: req.user.email });
 
     res.status(200).json({
       success: true,

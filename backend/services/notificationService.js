@@ -26,13 +26,13 @@ const sendNotification = async (reminder) => {
   const capitalizedShopName = shopName.replace(/\b\w/g, c => c.toUpperCase());
 
   const textMessage = reminder.message ||
-    `Dear ${customer.name}, you have an outstanding balance of ${currency} ${balance} at ${capitalizedShopName}. Please clear your dues at your earliest convenience. Thank you!`;
+    `Dear ${customer.name}, you have an outstanding balance of ${currency} ${balance} at ${capitalizedShopName}. Please clear your dues at your earliest convenience.\n\nContact: ${user.phone}\n\nThank you!`;
 
-  const htmlMessage = email.makeHtml({ customerName: customer.name, shopName: capitalizedShopName, balance, currency });
+  const htmlMessage = email.makeHtml({ customerName: customer.name, shopName: capitalizedShopName, balance, currency, phone: user.phone });
 
   const subject = `Payment Reminder from ${capitalizedShopName}`;
 
-  const result = await email.sendEmail(customer.email, subject, textMessage, htmlMessage, { fromName: capitalizedShopName });
+  const result = await email.sendEmail(customer.email, subject, textMessage, htmlMessage, { fromName: capitalizedShopName, replyTo: user.email });
   return { success: true, results: [{ channel: 'email', ...result }] };
 };
 
