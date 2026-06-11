@@ -60,7 +60,15 @@ const sendEmail = async (to, subject, text, html, options = {}) => {
       body: JSON.stringify({ to, subject, text, html, fromName: options.fromName || fromName }),
     });
 
-    const result = await response.json();
+    const contentType = response.headers.get('content-type') || '';
+    const raw = await response.text();
+
+    if (!contentType.includes('application/json')) {
+      console.error(`[Email] Apps Script returned non-JSON (${contentType}). URL may be wrong or needs reauthorization.`);
+      throw new Error('Apps Script URL is invalid or not deployed. Check your EMAIL_APPS_SCRIPT_URL.');
+    }
+
+    const result = JSON.parse(raw);
 
     if (result.error) {
       console.error(`[Email] Apps Script error for ${to}: ${result.error}`);
