@@ -278,7 +278,7 @@ router.post('/send-test', authMiddleware, async (req, res, next) => {
     const html = email.makeHtml({ customerName: customer.name, shopName: capitalizedShopName, balance: customer.netBalance, currency });
     const subject = `Payment Reminder from ${capitalizedShopName}`;
 
-    const result = await email.sendEmail(customer.email, subject, text, html);
+    const result = await email.sendEmail(customer.email, subject, text, html, { fromName: capitalizedShopName });
 
     res.status(200).json({
       success: true,

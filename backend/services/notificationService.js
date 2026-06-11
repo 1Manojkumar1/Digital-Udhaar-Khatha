@@ -32,7 +32,7 @@ const sendNotification = async (reminder) => {
 
   const subject = `Payment Reminder from ${capitalizedShopName}`;
 
-  const result = await email.sendEmail(customer.email, subject, textMessage, htmlMessage);
+  const result = await email.sendEmail(customer.email, subject, textMessage, htmlMessage, { fromName: capitalizedShopName });
   return { success: true, results: [{ channel: 'email', ...result }] };
 };
 

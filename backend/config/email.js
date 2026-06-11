@@ -45,7 +45,7 @@ const makeHtml = ({ customerName, shopName, balance, currency }) => `
 </html>
 `;
 
-const sendEmail = async (to, subject, text, html) => {
+const sendEmail = async (to, subject, text, html, options = {}) => {
   if (!emailReady) {
     console.log(`\n[DEV LOG] Email → ${to}`);
     console.log(`Subject: "${subject}"`);
@@ -57,7 +57,7 @@ const sendEmail = async (to, subject, text, html) => {
     const response = await fetch(appsScriptUrl, {
       method: 'POST',
       headers: { 'Content-Type': 'text/plain' },
-      body: JSON.stringify({ to, subject, text, html, fromName }),
+      body: JSON.stringify({ to, subject, text, html, fromName: options.fromName || fromName }),
     });
 
     const result = await response.json();
